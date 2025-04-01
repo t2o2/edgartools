@@ -275,7 +275,6 @@ def test_stitching_using_xbrls():
     print(df.columns)
     print(df.concept)
 
-@lru_cache(maxsize=None)
 def get_statements(ticker:str, n=6):
     c = Company(ticker)
     filings = c.latest("10-K", n)

@@ -1,6 +1,5 @@
 import re
 from collections import defaultdict, OrderedDict
-from functools import lru_cache
 from typing import Dict, List, Optional
 from typing import Union
 
@@ -328,7 +327,6 @@ class XBRLPresentation(BaseModel):
             self._build_rich_tree(child, child_tree, detailed)
 
 
-@lru_cache(maxsize=None)
 def get_axes_for_role(role: PresentationElement) -> List[PresentationElement]:
     """
     Find all axes (dimensions) for a given role.
@@ -377,7 +375,6 @@ def get_members_for_axis(axis_element:PresentationElement,
     return members
 
 
-@lru_cache(maxsize=None)
 def get_root_element(element: PresentationElement) -> PresentationElement:
     """Navigate up to find the root element"""
     current = element

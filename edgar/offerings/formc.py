@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import date, datetime
-from functools import lru_cache
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
@@ -33,7 +32,6 @@ class FilerInformation(BaseModel):
     period: Optional[date] = None
 
     @property
-    @lru_cache(maxsize=1)
     def company(self):
         return Company(self.cik)
 

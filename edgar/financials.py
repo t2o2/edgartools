@@ -1,5 +1,5 @@
 import asyncio
-from functools import lru_cache, cached_property
+from functools import cached_property
 from typing import Optional, List, Dict
 
 import numpy as np
@@ -395,7 +395,6 @@ class MultiFinancials:
     def balance_sheet(self, standard: bool = True) -> Optional[Statement]:
         return self.get_balance_sheet(standard=standard)
 
-    @lru_cache(maxsize=1)
     def get_balance_sheet(self, standard: bool = True) -> Optional[Statement]:
         return self._stitch_statements(lambda f: f.get_balance_sheet(standard=standard))
 
@@ -403,7 +402,6 @@ class MultiFinancials:
     def income(self, standard: bool = True) -> Optional[Statement]:
         return self.get_income_statement(standard=standard)
 
-    @lru_cache(maxsize=1)
     def get_income_statement(self, standard: bool = True) -> Optional[Statement]:
         return self._stitch_statements(lambda f: f.get_income_statement(standard=standard))
 
@@ -411,7 +409,6 @@ class MultiFinancials:
     def cashflow(self, standard: bool = True) -> Optional[Statement]:
         return self.get_cash_flow_statement(standard=standard)
 
-    @lru_cache(maxsize=1)
     def get_cash_flow_statement(self, standard: bool = True) -> Optional[Statement]:
         return self._stitch_statements(lambda f: f.get_cash_flow_statement(standard=standard))
 
@@ -419,7 +416,6 @@ class MultiFinancials:
     def comprehensive_income(self, standard: bool = True) -> Optional[Statement]:
         return self.get_statement_of_comprehensive_income(standard=standard)
 
-    @lru_cache(maxsize=1)
     def get_statement_of_comprehensive_income(self, standard: bool = True) -> Optional[Statement]:
         return self._stitch_statements(lambda f: f.get_statement_of_comprehensive_income(standard=standard))
 

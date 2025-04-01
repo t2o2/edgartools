@@ -1,7 +1,6 @@
 import json
 import os
 import re
-from functools import lru_cache
 from io import StringIO
 from typing import Optional, Union, List, Dict, Any
 
@@ -28,7 +27,6 @@ mutual_fund_tickers_url = "https://www.sec.gov/files/company_tickers_mf.json"
 company_tickers_exchange_url = "https://www.sec.gov/files/company_tickers_exchange.json"
 
 
-@lru_cache(maxsize=1)
 def cusip_ticker_mapping(allow_duplicate_cusips: bool = True) -> pd.DataFrame:
     """
     Download the Cusip to Ticker mapping data from the SEC website.
@@ -57,7 +55,6 @@ def load_tickers_from_local() -> Optional[Dict[str, Any]]:
     return json.loads(company_tickers_file.read_text())
 
 
-@lru_cache(maxsize=1)
 def get_company_tickers(
         as_dataframe: bool = True,
         clean_name: bool = True,
@@ -167,7 +164,6 @@ def get_cik_tickers_from_ticker_txt():
         log.error(f"Error fetching company tickers from [{ticker_txt_url}]: {str(e)}")
         return None
 
-@lru_cache(maxsize=1)
 def get_cik_tickers():
     """Merge unique records from both sources"""
     txt_data = get_cik_tickers_from_ticker_txt()
@@ -191,13 +187,11 @@ def get_cik_tickers():
 
     return merged_data
 
-@lru_cache(maxsize=None)
 def list_all_tickers():
     """List all tickers from the merged data"""
     return get_cik_tickers()['ticker'].tolist()
 
 
-@lru_cache(maxsize=None)
 def get_company_cik_lookup():
     df = get_cik_tickers()
 
@@ -214,7 +208,6 @@ def get_company_cik_lookup():
     return lookup
 
 
-@lru_cache(maxsize=None)
 def get_cik_ticker_lookup():
     """Create a mapping of CIK to base ticker symbols.
     For CIKs with multiple tickers, uses the shortest ticker (usually the base symbol).
@@ -229,7 +222,6 @@ def get_cik_ticker_lookup():
     return cik_to_tickers
 
 
-@lru_cache(maxsize=128)
 def find_ticker(cik: Union[int, str]) -> str:
     """Find the ticker symbol for a given CIK.
     Returns empty string if no ticker is found.
@@ -247,7 +239,6 @@ def find_ticker(cik: Union[int, str]) -> str:
     except (ValueError, TypeError):
         return ""
 
-@lru_cache(maxsize=None)
 def get_company_ticker_name_exchange():
     """
     Return a DataFrame with columns [cik	name	ticker	exchange]
@@ -269,7 +260,6 @@ def get_companies_by_exchange(exchange: Union[List[str], str]):
     return df[df['exchange'].str.lower().isin(exchanges)].reset_index(drop=True)
 
 
-@lru_cache(maxsize=None)
 def get_mutual_fund_tickers():
     """
     Get mutual fund tickers.
@@ -280,7 +270,6 @@ def get_mutual_fund_tickers():
     return pd.DataFrame(data['data'], columns=['cik', 'seriesId', 'classId', 'ticker'])
 
 
-@lru_cache(maxsize=None)
 def get_mutual_fund_lookup():
     df = get_mutual_fund_tickers()
     return dict(zip(df['ticker'], df['cik']))
@@ -357,7 +346,6 @@ def find_cik(ticker):
     return find_mutual_fund_cik(ticker)
 
 
-@lru_cache(maxsize=128)
 def get_ticker_from_cusip(cusip: str):
     """
     Get the ticker symbol for a given Cusip.
@@ -393,7 +381,6 @@ def get_ticker_icon_url(ticker: str) -> str:
     """
     return f"https://raw.githubusercontent.com/nvstly/icons/main/ticker_icons/{ticker.upper()}.png"
 
-@lru_cache(maxsize=4)
 def get_icon_from_ticker(ticker: str) -> Optional[bytes]:
     """
     Download an icon for a given ticker as a PNG image, if available.

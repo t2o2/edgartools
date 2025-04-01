@@ -2,7 +2,6 @@ import datetime
 import re
 import tempfile
 from datetime import date
-from functools import lru_cache
 from pathlib import Path
 from typing import List
 from unittest.mock import patch, MagicMock
@@ -107,7 +106,6 @@ def test_get_filings_gets_correct_accession_number(filings_2021_q1):
     assert len(misparsed_accessions) == 0
 
 
-@lru_cache(maxsize=8)
 def cached_filings(year: int, quarter: int, index: str = "form"):
     return get_filings(year, quarter, index=index)
 

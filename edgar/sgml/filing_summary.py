@@ -18,7 +18,6 @@ from edgar.files.html import Document
 from edgar.richtools import print_rich
 from edgar.richtools import repr_rich, rich_to_text
 from edgar.xmltools import child_text
-from functools import lru_cache
 
 __all__ = ['Report', 'Reports', 'File', 'FilingSummary']
 
@@ -257,7 +256,6 @@ class Report:
         if table:
             return rich_to_text(table.render(500))
 
-    @lru_cache
     def _get_report_table(self):
         """
         Get the first table in the document

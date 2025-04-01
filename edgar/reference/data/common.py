@@ -1,5 +1,4 @@
 import sys
-from functools import lru_cache
 
 import pandas as pd
 import pyarrow.parquet as pq
@@ -13,7 +12,6 @@ else:
 __all__ = ['read_parquet_from_package', 'read_pyarrow_from_package', 'read_csv_from_package']
 
 
-@lru_cache(maxsize=1)
 def read_parquet_from_package(parquet_filename: str):
     package_name = 'edgar.reference.data'
 

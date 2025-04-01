@@ -1,5 +1,4 @@
 import hashlib
-from functools import lru_cache
 from typing import Dict, Any, Optional, List
 
 import pandas as pd
@@ -16,7 +15,6 @@ from edgar.xbrl.dimensions import Dimensions
 from edgar.xmltools import child_text
 
 
-@lru_cache(maxsize=128)
 def get_duration_label(start_date, end_date):
     if start_date is None or end_date is None:
         return 'instant'
@@ -186,11 +184,9 @@ class XBRLInstance(BaseModel):
         self.facts = self.facts.set_index(['concept'] + dim_columns)
         self.facts = self.facts.convert_dtypes(dtype_backend="pyarrow")
 
-    @lru_cache(maxsize=128)
     def get_all_dimensions(self):
         return set(self.facts.index.names) - {'concept'}
 
-    @lru_cache(maxsize=128)
     def get_dimension_values(self, dimension):
         if dimension in self.facts.index.names:
             return self.facts.index.get_level_values(dimension).dropna().unique().tolist()
@@ -201,7 +197,6 @@ class XBRLInstance(BaseModel):
         return concept.split(':')[0] if ':' in concept else ''
 
     @property
-    @lru_cache(maxsize=1)
     def dimension_columns(self) -> List[str]:
         """Cache the list of dimension columns"""
         standard_columns = {'concept', 'value', 'units', 'decimals', 'start_date',

@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from functools import lru_cache
 from typing import Union, Dict, List, Tuple, Optional
 
 import pandas as pd
@@ -56,7 +55,6 @@ class Fund(BaseModel):
         return Company(self.company_cik)
 
     @property
-    @lru_cache(maxsize=1)
     def filings(self):
         fund_class: FundClass = get_fund_with_filings(self.class_contract_id)
         return fund_class.filings
@@ -80,7 +78,6 @@ class Fund(BaseModel):
         return repr_rich(self.__rich__())
 
 
-@lru_cache(maxsize=16)
 def get_fund(identifier: str):
     """Get the fund information from the ticker
     Uses this url "https://www.sec.gov/cgi-bin/series?CIK=&sc=companyseries&ticker={}&Find=Search"
@@ -170,7 +167,6 @@ class FundCompanyInfo:
     def state_of_incorporation(self):
         return self.ident_info.get("State of Inc.", None)
 
-    @lru_cache(maxsize=1)
     def id_and_name(self, contract_or_series: str) -> Optional[Tuple[str, str]]:
         class_contract_str = self.ident_info.get(contract_or_series, None)
         if not class_contract_str:
@@ -296,7 +292,6 @@ class FundClassOrSeries:
     def fund_name(self):
         return self.fund.name
 
-    @lru_cache(maxsize=1)
     def _id_and_name(self) -> Optional[Tuple[str, str]]:
         class_contract_str = self.fund.ident_info.get(self._contract_or_series, None)
         if not class_contract_str:

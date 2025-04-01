@@ -7,7 +7,6 @@ import tempfile
 import time
 import webbrowser
 import zipfile
-from functools import lru_cache
 from pathlib import Path
 from threading import Thread
 from typing import List, Optional, Tuple
@@ -780,7 +779,6 @@ class FilingHomepage:
             if datafile.description in xbrl_document_types:
                 return datafile
 
-    @lru_cache(maxsize=None)
     def get_filers(self):
         filer_divs = self._soup.find_all("div", id="filerDiv")
         filer_infos = []
@@ -833,7 +831,6 @@ class FilingHomepage:
         _,_, period = self.get_filing_dates()
         return period
 
-    @lru_cache(maxsize=None)
     def get_filing_dates(self)-> Optional[Tuple[str,str, Optional[str]]]:
         # Find the form grouping divs
         grouping_divs = self._soup.find_all("div", class_="formGrouping")

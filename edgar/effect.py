@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Optional
 
 import pandas as pd
@@ -93,7 +92,6 @@ class Effect:
             if len(filings) > 0:
                 return filings[0]
 
-    @lru_cache(maxsize=1)
     def summary(self) -> pd.DataFrame:
         return pd.DataFrame([{"cik": self.cik,
                               "entity": self.entity,

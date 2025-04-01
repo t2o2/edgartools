@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from functools import lru_cache
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -20,7 +19,6 @@ __all__ = [
 FUND_FORMS = ["NPORT-P", "NPORT-EX"]
 
 
-@lru_cache(maxsize=1)
 def list_forms():
     rows = []
     for page in range(7):

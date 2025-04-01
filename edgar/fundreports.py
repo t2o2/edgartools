@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from functools import lru_cache
 from typing import Union, List, Dict, Any, Optional
 
 import pandas as pd
@@ -324,7 +323,6 @@ class FundReport:
         return f"{self.general_info.name} - {self.general_info.series_name}"
 
     @property
-    @lru_cache(maxsize=2)
     def fund(self) -> Fund:
         return get_fund(self.general_info.series_id)
 
@@ -332,7 +330,6 @@ class FundReport:
     def has_investments(self):
         return len(self.investments) > 0
 
-    @lru_cache(maxsize=2)
     def investment_data(self) -> pd.DataFrame:
         """
         :return: The investments as a pandas dataframe
@@ -631,20 +628,10 @@ class FundReport:
         return table
 
     @property
-    @lru_cache(maxsize=2)
     def investments_table(self):
-        investments = self.investment_data()
-        if not investments.empty:
-            investments = (investments
-                           .assign(Name=lambda df: df.name,
-                                   Title=lambda df: df.title,
-                                   Cusip=lambda df: df.cusip,
-                                   Ticker=lambda df: df.ticker,
-                                   Value=lambda df: df.value_usd.apply(moneyfmt, curr='$', places=0),
-                                   Pct=lambda df: df.pct_value.apply(moneyfmt, curr='', places=1),
-                                   Category=lambda df: df.issuer_category + " " + df.asset_category)
-                           ).filter(['Name', 'Title', 'Cusip', 'Ticker', 'Category', 'Value', 'Pct'])
-        return df_to_rich_table(investments, title="Investments", title_style="bold deep_sky_blue1", max_rows=2000)
+        if not self.has_investments:
+            return Table(show_header=False, box=box.ROUNDED)
+        return self.investment_data().to_rich_table()
 
     def __rich__(self):
         title = f"{self.general_info.name} - {self.general_info.series_name} {self.general_info.rep_period_date}"

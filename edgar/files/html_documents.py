@@ -1,6 +1,5 @@
 import re
 import warnings
-from functools import lru_cache
 from typing import Optional, Union, Dict, List, Any, Tuple
 
 import pandas as pd
@@ -250,7 +249,6 @@ class TextBlock(Block):
         self.inline: bool = inline
 
     @property
-    @lru_cache(maxsize=1)
     def num_words(self):
         "return the number of words in this text block"
         if self.is_linebreak() or self.is_empty():
@@ -258,11 +256,9 @@ class TextBlock(Block):
         return len(self.text.split(" "))
 
     @property
-    @lru_cache(maxsize=1)
     def is_header(self):
         return is_header(self.text)
 
-    @lru_cache(maxsize=1)
     def analyze(self):
         return TextAnalysis(self.text)
 
@@ -282,7 +278,6 @@ class TableBlock(Block):
         super().__init__(text=None, **tag)
         self.table_element = table_element
 
-    @lru_cache()
     def get_text(self):
         _text = table_to_text(self.table_element)
         _text = "\n" + _text + "\n"
@@ -853,7 +848,6 @@ class TextAnalysis:
         return self.num_title_case_words / self.num_words > 0.6
 
     @property
-    @lru_cache(maxsize=1)
     def is_regular_text(self):
         return self.num_words > 25
 

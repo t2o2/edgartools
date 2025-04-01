@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional, Union
 from edgar.richtools import rich_to_text
 import re
-from functools import lru_cache
 
 
 @dataclass
@@ -199,7 +198,6 @@ class TableProcessor:
 
 
     @staticmethod
-    @lru_cache(maxsize=None)
     def _get_period_header_pattern() -> re.Pattern:
         """Create regex pattern for common financial period headers"""
         # Base components

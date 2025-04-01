@@ -10,7 +10,6 @@ import warnings
 from _thread import interrupt_main
 from dataclasses import dataclass
 from decimal import Decimal
-from functools import lru_cache
 from functools import wraps
 from typing import Union, Optional, Tuple, List
 from pathlib import Path
@@ -67,7 +66,6 @@ __all__ = [
     'filter_by_exchange',
     'filter_by_accession_number',
     'split_camel_case',
-    'cache_except_none',
     'text_extensions',
     'binary_extensions',
     'ask_for_identity',
@@ -133,7 +131,6 @@ class EdgarSettings:
     retries: int = 3
 
     @property
-    @lru_cache(maxsize=1)
     def limits(self):
         return httpx.Limits(max_connections=default_max_connections)
 
@@ -256,7 +253,6 @@ def get_identity() -> str:
     return identity
 
 
-@lru_cache(maxsize=None)
 def get_edgar_data_directory() -> Path:
     """Get the edgar data directory"""
     default_local_data_dir = Path(os.path.join(os.path.expanduser("~"), ".edgar"))
@@ -470,7 +466,6 @@ def filter_by_ticker(data: pa.Table,
     # return data
 
 
-@lru_cache(maxsize=1)
 def client_headers():
     return {'User-Agent': get_identity()}
 
@@ -853,34 +848,6 @@ def format_date(date: Union[str, datetime.datetime], fmt: str = "%Y-%m-%d") -> s
         return date
     else:
         return date.strftime(fmt)
-
-
-def cache_except_none(maxsize=128):
-    """
-    A decorator that caches the result of a function, but only if the result is not None.
-    """
-    def decorator(func):
-        cache = lru_cache(maxsize=maxsize)
-
-        @cache
-        def cached_func(*args, **kwargs):
-            result = func(*args, **kwargs)
-            if result is None:
-                # Clear this result from the cache
-                cached_func.cache_clear()
-            return result
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            return cached_func(*args, **kwargs)
-
-        # Preserve cache methods
-        wrapper.cache_info = cached_func.cache_info
-        wrapper.cache_clear = cached_func.cache_clear
-        return wrapper
-
-    return decorator
-
 
 def has_html_content(content: str) -> bool:
     """

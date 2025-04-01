@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from functools import lru_cache
 from functools import partial
 from io import StringIO
 from typing import Any, Optional, Dict, Callable
@@ -91,7 +90,6 @@ def get_text_elements(elements: List[Element]):
     return [e for e in elements if e.type == "text"]
 
 
-@lru_cache(maxsize=8)
 def chunk(html: str):
     document = HtmlDocument.from_html(html)
     return list(document.generate_chunks())
@@ -312,7 +310,6 @@ class ChunkedDocument:
         self._chunked_data = chunk_fn(self.chunks)
         self.chunk_fn = chunk_fn
 
-    @lru_cache(maxsize=4)
     def as_dataframe(self):
         return self.chunk_fn(self.chunks)
 

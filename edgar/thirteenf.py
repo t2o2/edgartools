@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from functools import lru_cache
 from typing import Union, List
 
 import pandas as pd
@@ -109,7 +108,6 @@ class ThirteenF:
         return self.filing.form
 
     @property
-    @lru_cache(maxsize=1)
     def infotable_xml(self):
         if self.has_infotable():
             infotable_content = self._get_infotable_from_attachment()
@@ -126,7 +124,6 @@ class ThirteenF:
             return attachments.get_by_index(0).download()
 
     @property
-    @lru_cache(maxsize=1)
     def infotable_html(self):
         if self.has_infotable():
             query = "document_type=='INFORMATION TABLE' and document.lower().endswith('.html')"
@@ -134,7 +131,6 @@ class ThirteenF:
             return attachments[0].download()
 
     @property
-    @lru_cache(maxsize=1)
     def infotable(self):
         if self.has_infotable():
             return ThirteenF.parse_infotable_xml(self.infotable_xml)
@@ -170,7 +166,6 @@ class ThirteenF:
         # like the CFO
         return self.primary_form_information.signature.name
 
-    @lru_cache(maxsize=8)
     def previous_holding_report(self):
         if len(self.report_period) == 1:
             return None
@@ -182,7 +177,6 @@ class ThirteenF:
         return ThirteenF(previous_filing, use_latest_period_of_report=False)
 
     @staticmethod
-    @lru_cache(maxsize=8)
     def parse_primary_document_xml(primary_document_xml: str):
         root = find_element(primary_document_xml, "edgarSubmission")
         # Header data

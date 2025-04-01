@@ -1,9 +1,7 @@
 from edgar import *
-from functools import lru_cache
 
 tickers = ['AAPL', 'NFLX', 'TSLA']
 
-@lru_cache(maxsize=16)
 def get_xbrl(ticker):
     company = Company(ticker)
     filing = company.get_filings(form="10-K").latest(1)

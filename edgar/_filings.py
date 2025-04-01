@@ -6,7 +6,7 @@ import webbrowser
 from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import datetime
-from functools import lru_cache, cached_property
+from functools import cached_property
 from io import BytesIO
 from os import PathLike
 from pathlib import Path
@@ -154,7 +154,6 @@ def get_previous_quarter(year, quarter) -> Tuple[int, int]:
         return year, quarter - 1
 
 
-@lru_cache(maxsize=1)
 def available_quarters() -> YearAndQuarters:
     """
     Get a list of year and quarter tuples
@@ -1022,7 +1021,6 @@ def get_current_url(atom: bool = True,
     return url
 
 
-@lru_cache(maxsize=32)
 def get_current_entries_on_page(count: int, start: int, form: Optional[str] = None, owner: str = 'include'):
     url = get_current_url(count=count, start=start, form=form if form else '', owner=owner, atom=True)
     response = get_with_retry(url)
@@ -1224,7 +1222,6 @@ class CurrentFilings(Filings):
         )
 
 
-@lru_cache(maxsize=8)
 def _get_cached_filings(year: Optional[Years] = None,
                         quarter: Optional[Quarters] = None,
                         form: Optional[Union[str, List[IntString]]] = None,
@@ -1334,7 +1331,6 @@ class Filing:
         # Return all the exhibits on the filing
         return self.attachments.exhibits
 
-    @lru_cache(maxsize=4)
     def html(self) -> Optional[str]:
         """Returns the html contents of the primary document if it is html"""
         sgml = self.sgml()
@@ -1355,13 +1351,11 @@ class Filing:
                 return None
         return html
 
-    @lru_cache(maxsize=4)
     def xml(self) -> Optional[str]:
         """Returns the xml contents of the primary document if it is xml"""
         sgml = self.sgml()
         return sgml.xml()
 
-    @lru_cache(maxsize=4)
     def text(self) -> str:
         """Convert the html of the main filing document to text"""
         html_content = self.html()
@@ -1459,7 +1453,6 @@ class Filing:
         """
         return local_filing_path(str(self.filing_date), self.accession_no)
 
-    @lru_cache()
     def sgml(self) -> FilingSGML:
         """
         Read the filing from the local storage path if it exists
@@ -1525,7 +1518,6 @@ class Filing:
             return cls.from_dict(data)
 
     @property
-    @lru_cache(maxsize=1)
     def header(self):
         _sgml = self.sgml()
         return _sgml.header
@@ -1550,17 +1542,14 @@ class Filing:
         # Use the homepage to determine the url since SGML sometimes miss the primary HTML file
         webbrowser.open(self.homepage.primary_html_document.url)
 
-    @lru_cache(maxsize=1)
     def sections(self) -> List[str]:
         html = self.html()
         assert html is not None
         return html_sections(html)
 
-    @lru_cache(maxsize=1)
     def __get_bm25_search_index(self):
         return BM25Search(self.sections())
 
-    @lru_cache(maxsize=1)
     def __get_regex_search_index(self):
         return RegexSearch(self.sections())
 
@@ -1611,14 +1600,12 @@ class Filing:
         """Alias for homepage"""
         return self.homepage
 
-    @lru_cache(maxsize=1)
     def get_entity(self):
         """Get the company to which this filing belongs"""
         "Get the company for cik. Cache for performance"
         from edgar.entities import CompanyData
         return CompanyData.for_cik(self.cik)
 
-    @lru_cache(maxsize=1)
     def as_company_filing(self):
         """Get this filing as a company filing. Company Filings have more information"""
         company = self.get_entity()
@@ -1629,7 +1616,6 @@ class Filing:
         if filings and not filings.empty:
             return filings[0]
 
-    @lru_cache(maxsize=1)
     def related_filings(self):
         """Get all the filings related to this one
         There is no file number on this base Filing class so first get the company,

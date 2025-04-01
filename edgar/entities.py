@@ -2,7 +2,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass
-from functools import lru_cache, cached_property
+from functools import cached_property
 from itertools import zip_longest
 from typing import List, Dict, Optional, Union, Tuple, Any
 
@@ -641,7 +641,6 @@ class EntityData:
             return "\U0001F464"  # Person
 
     @property
-    @lru_cache(maxsize=1)
     def display_name(self) -> str:
         """Reverse the name if it is a company"""
         if self.is_company:
@@ -768,14 +767,12 @@ class EntityData:
                               cik=self.cik,
                               company_name=self.name)
 
-    @lru_cache(maxsize=1)
     def summary(self) -> pd.DataFrame:
         return pd.DataFrame([{'company': self.name,
                               'cik': self.cik,
                               'category': self.category,
                               'industry': self.sic_description}]).set_index('cik')
 
-    @lru_cache(maxsize=1)
     def ticker_info(self) -> pd.DataFrame:
         return pd.DataFrame({"exchange": self.exchanges, "ticker": self.tickers}).set_index("ticker")
 
@@ -1187,7 +1184,6 @@ def parse_entity_submissions(cjson: Dict[str, Any]):
                        )
 
 
-@lru_cache(maxsize=64)
 def get_entity(entity_identifier: IntString) -> EntityData:
     """
         Get a company by cik or ticker
@@ -1236,7 +1232,6 @@ Company = get_entity
 Entity = get_entity
 
 
-@lru_cache(maxsize=32)
 def get_entity_submissions(cik: int) -> Optional[EntityData]:
     # Check the environment var EDGAR_USE_LOCAL_DATA
     if is_using_local_storage():
@@ -1249,7 +1244,6 @@ def get_entity_submissions(cik: int) -> Optional[EntityData]:
         return parse_entity_submissions(submissions_json)
 
 
-@lru_cache(maxsize=32)
 def download_entity_submissions_from_sec(cik: int) -> Optional[Dict[str, Any]]:
     """Get the company filings for a given cik"""
     try:
@@ -1306,7 +1300,6 @@ class NoCompanyFactsFound(Exception):
         self.message = f"""No Company facts found for cik {cik}"""
 
 
-@lru_cache(maxsize=32)
 def get_company_facts(cik: int):
     # Check the environment var EDGAR_USE_LOCAL_DATA
     if os.getenv("EDGAR_USE_LOCAL_DATA"):
@@ -1439,7 +1432,6 @@ class CompanyConcept:
         )
 
 
-@lru_cache(maxsize=32)
 def get_concept(cik: int,
                 taxonomy: str,
                 concept: str):
@@ -1472,7 +1464,6 @@ def get_concept(cik: int,
                 return Result.Fail(error=error_message)
 
 
-@lru_cache(maxsize=1)
 def get_ticker_to_cik_lookup():
     tickers_json = download_json(
         "https://www.sec.gov/files/company_tickers.json"
@@ -1491,7 +1482,6 @@ def _parse_cik_lookup_data(content):
         } for line in content.split("\n") if line != '']
 
 
-@lru_cache(maxsize=1)
 def get_cik_lookup_data() -> pd.DataFrame:
     """
     Get a dataframe of company/entity names and their cik
@@ -1583,11 +1573,9 @@ class CompanySearchIndex(FastSearch):
         return (self.data[-10:], tuple(self.data[0].keys())) == (other.data[-10:], tuple(other.data[0].keys()))
 
 
-@lru_cache(maxsize=1)
 def _get_company_search_index():
     return CompanySearchIndex()
 
 
-@lru_cache(maxsize=16)
 def find_company(company: str, top_n: int = 10):
     return _get_company_search_index().search(company, top_n=top_n)

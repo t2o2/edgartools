@@ -1,6 +1,5 @@
 import hashlib
 import re
-from functools import lru_cache
 from typing import List, Dict, Callable, Any
 
 import pyarrow as pa
@@ -95,7 +94,6 @@ def search(index: FastSearch, query: str, top_n: int = 10) -> List[Dict[str, str
     return index.search(query, top_n)
 
 
-@lru_cache(maxsize=128)
 def cached_search(index: FastSearch, query: str, top_n: int = 10):
     return index.search(query, top_n)
 

@@ -1,11 +1,8 @@
-from functools import lru_cache
-
 from edgar.reference.data.common import read_csv_from_package
 
 sec_form_data = read_csv_from_package('secforms.csv')
 
 
-@lru_cache(maxsize=64)
 def describe_form(form: str,
                   prepend_form: bool = True) -> str:
     """

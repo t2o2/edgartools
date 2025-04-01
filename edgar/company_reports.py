@@ -1,5 +1,5 @@
 from datetime import datetime
-from functools import lru_cache, partial
+from functools import partial
 from typing import Dict, List, Optional
 
 from rich import box
@@ -62,7 +62,6 @@ class CompanyReport:
         return self.financials.get_cash_flow_statement() if self.financials else None
 
     @property
-    @lru_cache(1)
     def financials(self):
         return Financials.extract(self._filing)
 
@@ -71,7 +70,6 @@ class CompanyReport:
         return self._filing.header.period_of_report
 
     @property
-    @lru_cache(maxsize=1)
     def chunked_document(self):
         return ChunkedDocument(self._filing.html())
 
@@ -153,7 +151,7 @@ class TenK(CompanyReport):
             },
             "ITEM 1B": {
                 "Title": "Unresolved Staff Comments",
-                "Description": "Any comments from the SEC staff on the company’s previous filings" +
+                "Description": "Any comments from the SEC staff on the company's previous filings" +
                                "that remain unresolved."
             },
             "ITEM 2": {
@@ -171,8 +169,8 @@ class TenK(CompanyReport):
         },
         "PART II": {
             "ITEM 5": {
-                "Title": "Market for Registrant’s Common Equity",
-                "Description": "Information on the company’s equity, including stock performance " +
+                "Title": "Market for Registrant's Common Equity",
+                "Description": "Information on the company's equity, including stock performance " +
                                "and shareholder matters."
             },
             "ITEM 6": {
@@ -180,8 +178,8 @@ class TenK(CompanyReport):
                 "Description": "Financial data summary for the last five fiscal years."
             },
             "ITEM 7": {
-                "Title": "Management’s Discussion and Analysis (MD&A)",
-                "Description": "Management’s perspective on the financial condition, changes in financial condition, " +
+                "Title": "Management's Discussion and Analysis (MD&A)",
+                "Description": "Management's perspective on the financial condition, changes in financial condition, " +
                                "and results of operations."
             },
             "ITEM 7A": {
@@ -196,7 +194,7 @@ class TenK(CompanyReport):
             },
             "ITEM 9": {
                 "Title": "Controls and Procedures",
-                "Description": "Evaluation of the effectiveness of the design and operation of the company’s disclosure controls and procedures."
+                "Description": "Evaluation of the effectiveness of the design and operation of the company's disclosure controls and procedures."
             },
             "ITEM 9A": {
                 "Title": "Controls and Procedures",
@@ -334,8 +332,8 @@ class TenQ(CompanyReport):
                                "and cash flow statements."
             },
             "ITEM 2": {
-                "Title": "Management’s Discussion and Analysis of Financial Condition and Results of Operations (MD&A)",
-                "Description": "Management’s perspective on the financial condition and results of operations."
+                "Title": "Management's Discussion and Analysis of Financial Condition and Results of Operations (MD&A)",
+                "Description": "Management's perspective on the financial condition and results of operations."
             },
             "ITEM 3": {
                 "Title": "Quantitative and Qualitative Disclosures About Market Risk",
@@ -407,14 +405,14 @@ class TwentyF(CompanyReport):
             },
             "ITEM 4A": {
                 "Title": "Unresolved Staff Comments",
-                "Description": "Any comments from the SEC staff on the company’s previous filings that " +
+                "Description": "Any comments from the SEC staff on the company's previous filings that " +
                                "remain unresolved."
             }
         },
         "PART II": {
             "ITEM 5": {
                 "Title": "Operating and Financial Review and Prospects",
-                "Description": "Management’s discussion and analysis of financial condition and results of operations."
+                "Description": "Management's discussion and analysis of financial condition and results of operations."
             },
             "ITEM 6": {
                 "Title": "Directors, Senior Management, and Employees",
@@ -545,11 +543,11 @@ class CurrentReport():
         "ITEM 5.03": {"Title": "Amendments to Articles of Incorporation or Bylaws; Change in Fiscal Year",
                       "Description": "Reports on amendments to articles of incorporation or bylaws."},
         "ITEM 5.04": {
-            "Title": "Temporary Suspension of Trading Under Registrant’s Employee Benefit Plans",
-            "Description": "Reports on the temporary suspension of trading under the company’s employee benefit plans."
+            "Title": "Temporary Suspension of Trading Under Registrant's Employee Benefit Plans",
+            "Description": "Reports on the temporary suspension of trading under the company's employee benefit plans."
         },
         "ITEM 5.05": {
-            "Title": "Amendment to the Registrant’s Code of Ethics, or Waiver of a Provision of the Code of Ethics",
+            "Title": "Amendment to the Registrant's Code of Ethics, or Waiver of a Provision of the Code of Ethics",
             "Description": "Reports on amendments or waivers to the code of ethics."},
         "ITEM 5.06": {"Title": "Change in Shell Company Status",
                       "Description": "Reports a change in the company's shell company status."},
@@ -607,7 +605,6 @@ class CurrentReport():
         return self._filing.company
 
     @property
-    @lru_cache(maxsize=1)
     def chunked_document(self):
         html = self._filing.html()
         if not html:
@@ -773,7 +770,6 @@ class PressRelease:
     def description(self) -> str:
         return self.attachment.description
 
-    @lru_cache(maxsize=1)
     def html(self) -> str:
         return self.attachment.download()
 
