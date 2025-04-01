@@ -40,7 +40,6 @@ from edgar.core import (log, display_size, sec_edgar,
                         filter_by_ticker,
                         filter_by_accession_number,
                         listify,
-                        cache_except_none,
                         is_start_of_quarter,
                         has_html_content,
                         InvalidDateException,
@@ -1759,7 +1758,6 @@ def summarize_files(data: pd.DataFrame) -> pd.DataFrame:
             )
 
 
-@cache_except_none(maxsize=16)
 def get_filing_by_accession(accession_number: str, year: int):
     """Cache-friendly version that takes year as parameter instead of using datetime.now()"""
     assert re.match(r"\d{10}-\d{2}-\d{6}", accession_number)
