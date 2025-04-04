@@ -421,7 +421,7 @@ def download_file(url: str, as_text: bool = None, path: Optional[Union[str, Path
         # Set the default based on the file extension
         as_text = url.endswith(text_extensions)
 
-    response = get_with_retry(url=url)
+    response = get_with_retry(url=url, headers={"Cache-Control": "no-cache"})
     inspect_response(response)
 
     if not as_text:
